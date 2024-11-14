@@ -1,0 +1,47 @@
+-- Teleportation Script for Roblox
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TeleportService = game:GetService("TeleportService")
+
+-- Function to teleport all players to the LocalPlayer's position
+local function teleportAllPlayers()
+    -- Get the position of the LocalPlayer
+    local playerPosition = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    
+    if not playerPosition then
+        warn("LocalPlayer's position could not be determined.")
+        return
+    end
+
+    -- Create a shield for all players
+    local function createImmortalShield(player)
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.MaxHealth = math.huge
+                humanoid.Health = math.huge
+            end
+        end
+    end
+
+    -- Teleport each player to the LocalPlayer's position
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            -- Create an immortal shield for the player
+            createImmortalShield(player)
+
+            -- Attempt to teleport the player
+            local success, errorMessage = pcall(function()
+                player.Character:SetPrimaryPartCFrame(playerPosition.CFrame)
+            end)
+
+            if not success then
+                warn("Failed to teleport player " .. player.Name .. ": " .. errorMessage)
+            end
+        end
+    end
+end
+
+-- Execute the teleportation function
+teleportAllPlayers()
